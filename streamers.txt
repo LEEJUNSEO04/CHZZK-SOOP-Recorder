@@ -1,0 +1,10 @@
+# CHZZK · SOOP 녹화 스트리머 목록
+# 형식: 사용여부,이름,방송_URL,화질
+# 1 = 사용, 0 = 비활성
+#
+# 예시(CHZZK):
+# 1,스트리머이름,https://chzzk.naver.com/live/채널ID,best
+#
+# 예시(SOOP):
+# 1,스트리머이름,https://play.sooplive.com/사용자ID,best
+

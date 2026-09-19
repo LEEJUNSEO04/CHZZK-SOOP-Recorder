@@ -1,0 +1,485 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHZZK Recorder Command Center</title>
+  <link rel="stylesheet" href="/static/styles.css?v=20260903-ai-thumbnail-1" />
+  <link rel="stylesheet" href="/static/command-center.css?v=20260917-2" />
+</head>
+<body>
+  <a class="skip-link" href="#dashboard">본문으로 이동</a>
+  <aside class="sidebar" aria-label="주 메뉴">
+    <div class="brand">
+      <div class="brand-icon">▶</div>
+      <div>
+        <h1>Recorder<span class="brand-point">.</span></h1>
+        <p>나의 방송 아카이브</p>
+      </div>
+    </div>
+
+    <div class="mini-status">
+      <span id="sideStateDot" class="pulse gray"></span>
+      <div>
+        <b id="sideStateText">상태 확인 중</b>
+        <small id="sideUpdatedAt">-</small>
+      </div>
+    </div>
+
+    <nav>
+      <p class="nav-label">운영</p>
+      <button class="nav active" data-page="dashboard">대시보드</button>
+      <button class="nav" data-page="jobs">작업 상태</button>
+      <button class="nav" data-page="logs">오류/로그</button>
+
+      <p class="nav-label">관리</p>
+      <button class="nav" data-page="streamers">스트리머 관리</button>
+      <button class="nav" data-page="thumbnails">썸네일 관리</button>
+      <button class="nav" data-page="history">녹화/업로드 기록</button>
+      <button class="nav" data-page="settings">설정/경로</button>
+    </nav>
+
+    <div class="side-footer">
+      <span>local</span>
+      <b id="sideFreeGb">- GB</b>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">MY WORKSPACE <span class="eyebrow-separator">/</span> LIVE ARCHIVE</div>
+        <h2 id="pageTitle">대시보드</h2>
+        <p id="updatedAt">상태를 불러오는 중...</p>
+      </div>
+
+      <div class="actions">
+        <button id="refreshViewBtn" class="btn ghost" type="button">화면 새로고침</button>
+        <details class="control-menu">
+        <summary class="btn ghost">프로세스 제어 <span aria-hidden="true">⌄</span></summary>
+        <div class="control-menu-body">
+        <p>녹화·업로드 실행 제어</p>
+        <button id="startBtn" class="btn good">녹화기 시작</button>
+        <button id="reloadBtn" class="btn warn">녹화기 리로드</button>
+        <button id="stopBtn" class="btn bad">녹화기 종료</button>
+        <span class="divider"></span>
+        <button id="ytStartBtn" class="btn blue">업로더 시작</button>
+        <button id="ytStopBtn" class="btn bad-soft">업로더 종료</button>
+        </div>
+        </details>
+        <button id="openDriveBtn" class="btn ghost">Drive 폴더</button>
+      </div>
+    </header>
+
+    <section id="dashboard" class="page active">
+      <div id="connectionNotice" class="connection-notice" role="status" hidden></div>
+      <section id="engineBanner" class="hero">
+        <div class="hero-left">
+          <div id="enginePill" class="state-pill gray">CHECK</div>
+          <h3 id="engineTitle">녹화기 상태 확인 중</h3>
+          <p id="engineDesc">상태 정보를 불러오는 중입니다.</p>
+        </div>
+        <div class="hero-right">
+          <div class="hero-metric">
+            <span>상태 갱신</span>
+            <b id="engineAge">-</b>
+          </div>
+          <div class="hero-metric">
+            <span>업로더</span>
+            <b id="uploaderState">-</b>
+          </div>
+        </div>
+      </section>
+
+      <section id="attentionCenter" class="attention-center" aria-label="확인이 필요한 항목" hidden>
+        <div class="attention-heading"><span class="attention-icon" aria-hidden="true">!</span><div><b>지금 확인해 주세요</b><small id="attentionSummary"></small></div></div>
+        <div id="attentionItems" class="attention-items"></div>
+      </section>
+
+      <section class="section-block overview-section">
+        <div class="section-head">
+          <div>
+            <h3>운영 요약</h3>
+            <p>방송 감시, 녹화, 업로드 상태를 한 번에 봅니다.</p>
+          </div>
+          <span id="overallHealthPill" class="health-pill gray">확인 중</span>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-card">
+            <span>감시 중</span>
+            <strong id="watchCount">0</strong>
+            <em>streamers</em>
+          </div>
+          <div class="metric-card">
+            <span>방송 중</span>
+            <strong id="liveCount">0</strong>
+            <em>live</em>
+          </div>
+          <div class="metric-card rec">
+            <span>녹화 중</span>
+            <strong id="recordingCount">0</strong>
+            <em>recording</em>
+          </div>
+      <div class="metric-card net">
+        <span>&#45348;&#53944;&#50892;&#53356;</span>
+        <strong><span id="netDown">↓ -</span> / <span id="netUp">↑ -</span></strong>
+        <em>Mbps</em>
+        <small id="netUpdated" class="metric-note">갱신 확인 중</small>
+      </div>
+          <div class="metric-card disk">
+            <span>남은 용량</span>
+            <strong id="freeGb">-</strong>
+            <em>GB</em>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-block safety-section">
+        <div class="section-head">
+          <div>
+            <h3>운영 안전 요약</h3>
+            <p>중복·정체·삭제 보호 상태를 읽기 전용으로 점검합니다.</p>
+          </div>
+          <span id="safetyHealthPill" class="health-pill gray">확인 중</span>
+        </div>
+        <div class="safety-grid">
+          <div class="safety-card"><span>프로세스</span><strong id="safetyProcesses">recorder - / streamlink -</strong><small id="safetyProcessSource">프로세스 확인 중</small></div>
+          <div class="safety-card"><span>데이터베이스</span><strong id="safetyDb">확인 중</strong><small id="safetyDbDetail">응답 시간 측정 중</small></div>
+          <div class="safety-card"><span>업로드 큐</span><strong id="safetyUpload">대기 - / 업로드 - / 처리 확인 -</strong><small>YouTube 활성 상태 기준</small></div>
+          <div class="safety-card"><span>안전 경고</span><strong id="safetyWarnings">중복 - / 정체 TS - / 삭제 보호 -</strong><small>TS 정체 기준 2시간 · 삭제 보호는 split 활성 항목</small></div>
+        </div>
+        <div class="db-live-panel">
+          <div class="db-live-head">
+            <div><i></i><strong>DB 실시간 변경</strong><span id="dbLiveSummary">연결 확인 중</span></div>
+            <small id="dbLiveUpdated">2초 자동 갱신</small>
+          </div>
+          <div id="dbLiveEvents" class="db-live-events">
+            <span class="db-live-empty">최근 변경을 불러오는 중입니다.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-block storage-section">
+        <div class="section-head">
+          <div>
+            <h3>저장소 센터</h3>
+            <p>temp / merged / failed / local_merged 사용량을 분리해서 표시합니다.</p>
+          </div>
+          <span id="storagePill" class="health-pill gray">확인 중</span>
+        </div>
+
+        <div class="storage-grid">
+          <div class="storage-card">
+            <div><span>temp</span><b id="storageTemp">-</b><em>GB</em></div>
+            <div class="bar"><i id="barTemp"></i></div>
+          </div>
+          <div class="storage-card">
+            <div><span>merged</span><b id="storageMerged">-</b><em>GB</em></div>
+            <div class="bar"><i id="barMerged"></i></div>
+          </div>
+          <div class="storage-card">
+            <div><span>failed</span><b id="storageFailed">-</b><em>GB</em></div>
+            <div class="bar"><i id="barFailed"></i></div>
+          </div>
+          <div class="storage-card">
+            <div><span>local_merged</span><b id="storageDrive">-</b><em>GB</em></div>
+            <div class="bar"><i id="barDrive"></i></div>
+          </div>
+        </div>
+
+        <div class="disk-detail">
+          <div>
+            <span>작업 드라이브</span>
+            <strong id="diskDriveName">-</strong>
+          </div>
+          <div>
+            <span>전체 용량</span>
+            <strong id="diskTotalGb">- GB</strong>
+          </div>
+          <div>
+            <span>사용 중</span>
+            <strong id="diskUsedGb">- GB</strong>
+          </div>
+          <div>
+            <span>남은 용량</span>
+            <strong id="diskFreeGb">- GB</strong>
+          </div>
+          <div class="disk-bar"><i id="diskUsedBar"></i></div>
+        </div>
+
+        <div class="storage-path">
+          <span>현재 저장 루트</span>
+          <b id="storageRootPath">-</b>
+        </div>
+        <div id="recordingFileList" class="file-list"></div>
+      </section>
+
+      <section id="broadcastSection" class="broadcast-section">
+        <div class="broadcast-toolbar">
+          <div><span class="eyebrow">ON AIR</span><h3>방송 모니터</h3></div>
+          <div class="broadcast-tools">
+            <label class="search-field"><span aria-hidden="true">⌕</span><input id="broadcastSearch" type="search" placeholder="이름 또는 방송 제목 검색" aria-label="이름 또는 방송 제목 검색"><kbd>/</kbd></label>
+            <div id="broadcastFilters" class="segmented" role="group" aria-label="방송 상태 필터">
+              <button type="button" data-filter="all" aria-pressed="true">전체</button>
+              <button type="button" data-filter="live" aria-pressed="false">방송 중</button>
+              <button type="button" data-filter="check" aria-pressed="false">확인 필요</button>
+            </div>
+          </div>
+        </div>
+        <div class="split-grid">
+        <div class="section-block">
+          <div class="section-head">
+            <div>
+              <h3>녹화 현황</h3>
+              <p>현재 녹화 중인 방송과 진행 시간을 표시합니다.</p>
+            </div>
+            <span id="recordingBadge" class="chip">0</span>
+          </div>
+          <div id="activeRecordings" class="empty">현재 녹화 중인 방송이 없습니다.</div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-head">
+            <div>
+              <h3>방송 상태</h3>
+              <p>최근 감시 루프에서 확인한 결과입니다.</p>
+            </div>
+            <span class="chip">auto</span>
+          </div>
+          <div id="liveList" class="status-list"></div>
+        </div>
+        </div>
+      </section>
+
+      <section id="uploadSection" class="section-block upload-section">
+        <div class="section-head">
+          <div>
+            <h3>업로드 센터</h3>
+            <p>YouTube 대기열과 업로드 파일 위치를 순서대로 표시합니다.</p>
+          </div>
+          <span id="uploadHealthPill" class="health-pill gray">확인 중</span>
+        </div>
+
+        <div class="metric-grid upload-grid">
+          <div class="metric-card upload">
+            <span>YouTube 대기</span>
+            <strong id="ytPending">0</strong>
+            <em id="ytPendingDetail">대기·보류·실패 포함</em>
+          </div>
+          <div class="metric-card upload upload-active-card">
+            <div class="upload-active-head">
+              <span>업로드 중</span>
+              <div><strong id="ytUploading">0</strong><em>개</em></div>
+            </div>
+            <div id="ytUploadWorkers" class="upload-worker-grid">
+              <div class="upload-worker-empty">진행 중인 업로드 없음</div>
+            </div>
+            <small id="ytUploadProgressDetail" class="upload-card-alert"></small>
+          </div>
+          <div class="metric-card upload">
+            <span>업로드 완료</span>
+            <strong id="ytDone">0</strong>
+            <em>done</em>
+            <small id="ytProcessingPending" class="metric-note"></small>
+          </div>
+          <div class="metric-card upload">
+            <span>오늘 업로드</span>
+            <strong id="ytTodayDone">0</strong>
+            <em>개</em>
+            <small id="ytDailyAverage" class="metric-note">최근 7일 평균 계산 중</small>
+          </div>
+          <div class="metric-card danger">
+            <span>업로드 실패</span>
+            <strong id="ytFailed">0</strong>
+            <em>failed</em>
+          </div>
+        </div>
+
+        <div class="daily-storage-flow">
+          <div class="daily-flow-head">
+            <div>
+              <h4>오늘 저장공간 변화</h4>
+              <p>새로 생긴 완성본에서 삭제된 파일을 뺀 값입니다. 녹화 중인 임시 파일은 제외됩니다.</p>
+            </div>
+          </div>
+          <div class="daily-flow-formula">
+            <span>추가됨</span><b>−</b><span>삭제됨</span><b>=</b><strong>오늘 하드에 남은 변화</strong>
+          </div>
+          <div class="daily-flow-grid">
+            <div class="daily-flow-item added">
+              <div><span>새 영상이 생김</span><b id="dailyAddedGb">+0.0GB</b></div>
+              <div class="daily-flow-bar"><i id="dailyAddedBar"></i></div>
+            </div>
+            <div class="daily-flow-item uploaded">
+              <div><span>YouTube 업로드 완료</span><b id="dailyUploadedGb">0.0GB</b></div>
+              <div class="daily-flow-bar"><i id="dailyUploadedBar"></i></div>
+            </div>
+            <div class="daily-flow-item deleted">
+              <div><span>서버에서 지워짐</span><b id="dailyDeletedGb">−0.0GB</b></div>
+              <div class="daily-flow-bar"><i id="dailyDeletedBar"></i></div>
+            </div>
+          </div>
+          <div class="daily-net-panel">
+            <div>
+              <span>오늘 하드에 남은 변화</span>
+              <strong id="dailyStorageNet">+0.0GB</strong>
+            </div>
+            <small id="dailyStorageNetDetail">계산 중입니다.</small>
+          </div>
+          <small id="dailyStorageAverage">최근 7일 평균 계산 중</small>
+        </div>
+
+        <div class="queue-headline">
+          <div>
+            <h4>업로드 대기열</h4>
+            <p>업로드 순서, 제목, 파일 위치, 실제 존재 여부를 확인합니다.</p>
+          </div>
+          <div class="queue-refresh-controls"><small id="queueRefreshHint" role="status">목록 확인 중</small><button class="btn small ghost" onclick="loadUploadQueue()">새로고침</button></div>
+        </div>
+        <div id="uploadQueueList" class="queue-list"></div>
+        <div id="uploadQueuePagination" class="queue-pagination"></div>
+      </section>
+
+      <section class="section-block latest-log">
+        <div class="section-head">
+          <div>
+            <h3>최근 동작</h3>
+            <p>마지막 recorder 로그 한 줄입니다.</p>
+          </div>
+          <span class="chip">latest</span>
+        </div>
+        <code id="latestLogLine">아직 로그가 없습니다.</code>
+      </section>
+    </section>
+
+    <section id="streamers" class="page">
+      <section class="section-block">
+        <div class="section-head">
+          <div>
+            <h3>스트리머 추가</h3>
+            <p>저장 후 녹화기 리로드를 누르면 바로 반영됩니다.</p>
+          </div>
+        </div>
+
+        <form id="addForm" class="form">
+          <input id="nameInput" placeholder="스트리머 이름" required />
+          <input id="urlInput" placeholder="https://chzzk.naver.com/live/..." required />
+          <select id="qualityInput">
+            <option value="best">best</option>
+            <option value="1080p60">1080p60</option>
+            <option value="720p60">720p60</option>
+            <option value="480p">480p</option>
+          </select>
+          <button class="btn good" type="submit">추가</button>
+        </form>
+      </section>
+
+      <section class="section-block">
+        <div class="section-head">
+          <div>
+            <h3>등록된 스트리머</h3>
+            <p>ON/OFF와 화질을 확인합니다.</p>
+          </div>
+          <span id="streamerCount" class="chip">0</span>
+        </div>
+        <div id="streamerTable" class="table-list"></div>
+      </section>
+    </section>
+
+    <section id="jobs" class="page">
+      <section class="section-block">
+        <div class="section-head">
+          <div>
+            <h3>작업 상태</h3>
+            <p>녹화기, 현재 녹화, 업로더와 대기열 상태를 한눈에 표시합니다.</p>
+          </div>
+          <span id="jobHealthPill" class="health-pill gray">확인 중</span>
+        </div>
+        <div id="jobSummary" class="job-summary-grid"></div>
+        <div class="job-list-head">
+          <h4>지금 처리 중인 작업</h4>
+          <span id="jobActiveCount">0개</span>
+        </div>
+        <div id="jobList" class="status-list"></div>
+      </section>
+    </section>
+
+    <section id="thumbnails" class="page">
+      <section class="section-block thumbnail-center">
+        <div class="section-head thumbnail-head">
+          <div>
+            <h3>썸네일 관리</h3>
+            <p>업로드 전 준비된 장면과 YouTube 적용 상태를 확인하고, 마음에 들지 않으면 다른 장면으로 바꿉니다.</p>
+          </div>
+          <button id="thumbnailRefreshBtn" class="btn ghost small" type="button">새로고침</button>
+        </div>
+
+        <div class="thumbnail-summary-grid">
+          <div class="thumbnail-summary-card"><span>표시 영상</span><strong id="thumbnailTotal">0</strong><small>최근 업로드와 대기 항목</small></div>
+          <div class="thumbnail-summary-card good"><span>적용 완료</span><strong id="thumbnailApplied">0</strong><small>YouTube 반영 완료</small></div>
+          <div class="thumbnail-summary-card ready"><span>적용 예정</span><strong id="thumbnailReady">0</strong><small>업로드 완료 시 반영</small></div>
+          <div class="thumbnail-summary-card warn"><span>재시도 보류</span><strong id="thumbnailRetry">0</strong><small>최근 변경 한도 대기</small></div>
+        </div>
+
+        <div class="thumbnail-toolbar">
+          <div class="thumbnail-filters" role="group" aria-label="썸네일 상태 필터">
+            <button class="thumbnail-filter active" type="button" data-thumbnail-filter="all">전체</button>
+            <button class="thumbnail-filter" type="button" data-thumbnail-filter="ready">적용 예정</button>
+            <button class="thumbnail-filter" type="button" data-thumbnail-filter="applied">적용 완료</button>
+            <button class="thumbnail-filter" type="button" data-thumbnail-filter="retry_pending">재시도 보류</button>
+          </div>
+          <small id="thumbnailUpdatedAt">상태를 불러오는 중...</small>
+        </div>
+        <div id="thumbnailNotice" class="thumbnail-notice">AI 고품질 썸네일을 우선 생성하고, API 오류 때만 로컬 장면 후보로 안전하게 대체합니다.</div>
+        <div id="thumbnailGrid" class="thumbnail-grid">
+          <div class="empty">썸네일 정보를 불러오는 중입니다.</div>
+        </div>
+      </section>
+    </section>
+
+    <section id="history" class="page">
+      <section class="section-block">
+        <div class="section-head">
+          <div>
+            <h3>녹화/업로드 기록</h3>
+            <p>DB recordings 테이블 최근 기록입니다.</p>
+          </div>
+        </div>
+        <div id="recordingHistory" class="history-list"></div>
+      </section>
+    </section>
+
+    <section id="logs" class="page">
+      <section class="section-block">
+        <div class="section-head">
+          <div>
+            <h3>최근 로그</h3>
+            <p>문제 확인용 로그입니다.</p>
+          </div>
+          <button id="openLogsBtn" class="btn ghost small">로그 폴더 열기</button>
+        </div>
+        <pre id="logBox" class="logbox">불러오는 중...</pre>
+      </section>
+    </section>
+
+    <section id="settings" class="page">
+      <section class="section-block">
+        <div class="section-head">
+          <div>
+            <h3>설정/경로</h3>
+            <p>config.json 기준 경로입니다.</p>
+          </div>
+        </div>
+        <div id="settingsBox" class="settings-box"></div>
+      </section>
+    </section>
+  </main>
+
+  <div id="viewToast" class="view-toast" role="status" hidden></div>
+  <script src="/static/command-center.js?v=20260917-2"></script>
+  <script src="/static/app.js?v=20260917-ui-2"></script>
+  <script src="/static/dashboard_extra.js"></script>
+</body>
+</html>
+

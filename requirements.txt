@@ -1,0 +1,9 @@
+fastapi==0.136.3
+uvicorn==0.48.0
+pymysql==1.2.0
+requests==2.34.2
+websocket-client==1.9.0
+streamlink==8.4.0
+google-api-python-client==2.197.0
+google-auth-oauthlib==1.4.0
+pillow
