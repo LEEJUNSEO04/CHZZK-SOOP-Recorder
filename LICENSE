@@ -1,21 +1,25 @@
-MIT License
+Copyright (c) 2026 LEEJUNSEO04
+All Rights Reserved.
 
-Copyright (c) 2026 LEEJUNSEO
+본 소프트웨어 및 소스 코드는 개인적인 사용 및 열람 목적으로만 제공됩니다.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+제작자의 사전 허가 없이 다음 행위를 금지합니다.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. 소스 코드의 수정, 변형 또는 개작
+2. 원본 또는 수정본의 재배포
+3. 소스 코드의 전체 또는 일부를 이용한 2차 저작물의 배포
+4. 상업적 이용 또는 판매
+5. 다른 이름으로 재배포
+6. 본 프로그램을 기반으로 한 유료 서비스 제공
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+본 프로그램의 사용 여부 및 사용 방법은 전적으로 사용자의 판단에 따릅니다.
+
+본 프로그램의 사용 또는 오용으로 인해 발생하는
+녹화 실패, 데이터 손실, 파일 손상, 계정 제한,
+저작권 문제, 법적 분쟁 및 기타 직·간접적인 손해에 대해
+제작자는 책임을 부담하지 않습니다.
+
+본 소프트웨어는 어떠한 보증 없이 "있는 그대로(AS IS)" 제공됩니다.
+
+별도의 수정, 재배포 또는 상업적 이용 허가가 필요한 경우
+저장소 관리자에게 문의하십시오.
